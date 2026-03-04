@@ -41,7 +41,7 @@ with open("../2. data/checkpoints/checkpoint_for_mp4.pkl", "rb") as f:
 | Voucher value               | 50 PLN                                  |
 | Expected revenue            | **Median total_spend of lapsed test set**|
 
-**Cost matrix**
+### Cost matrix
 
 |                                | Actually Lapsed       | Actually Active |
 | ------------------------------ | --------------------- | --------------- |
