@@ -35,18 +35,18 @@ with open("../2. data/checkpoints/checkpoint_for_mp5.pkl", "rb") as f:
 
 ## What You Do
 
-| Step | Task                                     | Pre-filled? | Time      |
-| ---- | ---------------------------------------- | ----------- | --------- |
-| 1    | Load checkpoint                          | Yes         | 5 min     |
-| 2-3  | Reuse LR + RF models from checkpoint     | Yes         | 5 min     |
-| 4    | **TODO**: Train GradientBoosting         | **TODO**    | 15 min    |
-| 5    | **TODO**: Create VotingClassifier        | **TODO**    | 15 min    |
-| 6    | **TODO**: Multi-criteria comparison table | **TODO**    | 20 min    |
-| 7    | **TODO**: Business profit comparison     | **TODO**    | 20 min    |
-| 8    | **TODO**: Fairness analysis              | **TODO**    | 20 min    |
-| 9    | **TODO**: Interpretability assessment    | **TODO**    | 15 min    |
-| 10   | **TODO**: Write final recommendation     | **TODO**    | 20 min    |
-|      | **Total**                                |             | **~2.5 h**|
+| Step | Task                                       | Pre-filled? | Time      |
+| ---- | ------------------------------------------ | ----------- | --------- |
+| 1    | Load checkpoint                            | Yes         | 5 min     |
+| 2-3  | Reuse LR + RF models from checkpoint       | Yes         | 5 min     |
+| 4    | **TODO**: Train GradientBoosting           | **TODO**    | 15 min    |
+| 5    | **TODO**: Create VotingClassifier          | **TODO**    | 15 min    |
+| 6    | **TODO**: Multi-criteria comparison table   | **TODO**    | 20 min    |
+| 7    | **TODO**: Business profit comparison       | **TODO**    | 20 min    |
+| 8    | **TODO**: Fairness analysis                | **TODO**    | 20 min    |
+| 9    | **TODO**: Interpretability assessment      | **TODO**    | 15 min    |
+| 10   | **TODO**: Write final recommendation       | **TODO**    | 20 min    |
+|      | **Total**                                  |             | **~2.5 h**|
 
 ## What You Submit
 

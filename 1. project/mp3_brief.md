@@ -34,17 +34,17 @@ with open("../2. data/checkpoints/checkpoint_for_mp3.pkl", "rb") as f:
 
 ## What You Do
 
-| Step | Task                                     | Pre-filled? | Time      |
-| ---- | ---------------------------------------- | ----------- | --------- |
-| 1    | Load checkpoint                          | Yes         | 5 min     |
-| 2    | **TODO**: Train LR, evaluate metrics     | **TODO**    | 30 min    |
-| 3    | **TODO**: Train RF, evaluate metrics     | **TODO**    | 25 min    |
-| 4    | **TODO**: Plot ROC curves (same chart)   | **TODO**    | 15 min    |
-| 5    | **TODO**: Visualize RF feature importance | **TODO**    | 15 min    |
-| 6    | **TODO**: Compare train vs. test accuracy| **TODO**    | 10 min    |
-| 7    | **TODO**: Create summary table           | **TODO**    | 15 min    |
-| 8    | Save checkpoint for MP4                  | Yes         | 5 min     |
-|      | **Total**                                |             | **~2 h**  |
+| Step | Task                                       | Pre-filled? | Time     |
+| ---- | ------------------------------------------ | ----------- | -------- |
+| 1    | Load checkpoint                            | Yes         | 5 min    |
+| 2    | **TODO**: Train LR, evaluate metrics       | **TODO**    | 30 min   |
+| 3    | **TODO**: Train RF, evaluate metrics       | **TODO**    | 25 min   |
+| 4    | **TODO**: Plot ROC curves (same chart)     | **TODO**    | 15 min   |
+| 5    | **TODO**: Visualize RF feature importance   | **TODO**    | 15 min   |
+| 6    | **TODO**: Compare train vs. test accuracy  | **TODO**    | 10 min   |
+| 7    | **TODO**: Create summary table             | **TODO**    | 15 min   |
+| 8    | Save checkpoint for MP4                    | Yes         | 5 min    |
+|      | **Total**                                  |             | **~2 h** |
 
 ## What You Submit
 
