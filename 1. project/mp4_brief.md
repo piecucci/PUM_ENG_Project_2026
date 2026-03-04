@@ -35,11 +35,11 @@ with open("../2. data/checkpoints/checkpoint_for_mp4.pkl", "rb") as f:
 
 ## Business Parameters
 
-| Parameter                   | Value                                   |
-| --------------------------- | --------------------------------------- |
-| Campaign cost per customer  | **80 PLN** (voucher + operations)       |
-| Voucher value               | 50 PLN                                  |
-| Expected revenue            | **Median total_spend of lapsed test set**|
+| Parameter                   | Value                                     |
+| --------------------------- | ----------------------------------------- |
+| Campaign cost per customer  | **80 PLN** (voucher + operations)         |
+| Voucher value               | 50 PLN                                    |
+| Expected revenue            | **Median total_spend of lapsed test set** |
 
 ### Cost matrix
 
