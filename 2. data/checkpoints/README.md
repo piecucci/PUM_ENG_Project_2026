@@ -6,12 +6,12 @@ your current MP.
 
 ## Available Checkpoints
 
-| Checkpoint                 | Format | Start At | What It Contains           |
-| -------------------------- | ------ | -------- | -------------------------- |
-| `checkpoint_for_mp2.csv`   | CSV    | MP2      | Raw `customers.csv`        |
-| `checkpoint_for_mp3.pkl`   | PKL    | MP3      | Clean, encoded, scaled data|
-| `checkpoint_for_mp4.pkl`   | PKL    | MP4      | Trained models + pred.     |
-| `checkpoint_for_mp5.pkl`   | PKL    | MP5      | All evaluation artifacts   |
+| Checkpoint               | Format    | Start At | What It Contains           |
+| ------------------------ | --------- | -------- | -------------------------- |
+| `checkpoint_for_mp2.csv` | CSV       | MP2      | Raw `customers.csv`        |
+| `checkpoint_for_mp3.pkl` | PKL       | MP3      | Clean, encoded, scaled data|
+| `checkpoint_for_mp4.pkl` | PKL       | MP4      | Trained models + pred.     |
+| `checkpoint_for_mp5.pkl` | PKL       | MP5      | All evaluation artifacts   |
 
 ## How to Load
 
@@ -39,6 +39,7 @@ feature_names = checkpoint["feature_names"]
 ## CSV checkpoint_for_mp3 format
 
 The CSV version includes train and test data combined, with two extra columns:
+
 - `__target__`: the `is_lapsed` label (0 or 1)
 - `__split__`: "train" or "test"
 
@@ -62,6 +63,7 @@ See `checkpoint_summary.json` for row counts and MD5 hashes.
 ## Reproducibility
 
 All checkpoints were generated with:
+
 - `random_state=42` (universal seed)
 - scikit-learn 1.4.x–1.5.x, pandas 2.x, numpy <2.0
 - Exact 12-step preprocessing order from MP2
