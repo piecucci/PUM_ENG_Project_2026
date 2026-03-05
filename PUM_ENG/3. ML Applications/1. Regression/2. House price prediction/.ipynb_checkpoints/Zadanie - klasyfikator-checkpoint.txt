@@ -1,0 +1,4 @@
+Zadanie: 
+bazując na arkuszu regresja.ypnb oraz tutorialu:
+https://www.dataquest.io/blog/sci-kit-learn-tutorial/
+stwórz analogiczny arkusz dla klasyfikacji: klasyfikacja.ypnb

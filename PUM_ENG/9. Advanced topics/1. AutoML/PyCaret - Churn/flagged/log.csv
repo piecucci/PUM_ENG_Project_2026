@@ -1,0 +1,2 @@
+state,account_length,area_code,int_l_plan,vmail_plan,vmail_message,day_mins,day_calls,day_charge,eve_mins,eve_calls,eve_charge,night_mins,night_calls,night_charge,intl_mins,total_mins,intl_calls,intl_charge,total_charge,custserv_calls,output,flag,username,timestamp
+SC,123,45,yes,yes,123,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,,,,2023-06-14 13:30:01.185138
