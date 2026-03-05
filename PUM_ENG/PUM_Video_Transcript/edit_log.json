@@ -1,0 +1,67 @@
+[
+  {
+    "filename": "1. Introduction.txt",
+    "status": "success",
+    "error": null
+  },
+  {
+    "filename": "10. Testing and Validation.txt",
+    "status": "success",
+    "error": null
+  },
+  {
+    "filename": "11. Feature Engineering.txt",
+    "status": "success",
+    "error": null
+  },
+  {
+    "filename": "12. AutoML.txt",
+    "status": "success",
+    "error": null
+  },
+  {
+    "filename": "13. Ensemble Models.txt",
+    "status": "success",
+    "error": null
+  },
+  {
+    "filename": "2. Regression.txt",
+    "status": "success",
+    "error": null
+  },
+  {
+    "filename": "3. Classification 1.txt",
+    "status": "success",
+    "error": null
+  },
+  {
+    "filename": "4. Classification 2.txt",
+    "status": "success",
+    "error": null
+  },
+  {
+    "filename": "5. Segmentation 1.txt",
+    "status": "success",
+    "error": null
+  },
+  {
+    "filename": "6. Segmentation 2.txt",
+    "status": "success",
+    "error": null
+  },
+  {
+    "filename": "7. Reinforcement Learning.txt",
+    "status": "success",
+    "error": null
+  },
+  {
+    "filename": "8. ML Algorithms.txt",
+    "status": "success",
+    "error": null
+  },
+  {
+    "filename": "9. Data Science Process.txt",
+    "status": "success",
+    "error": null
+  }
+]

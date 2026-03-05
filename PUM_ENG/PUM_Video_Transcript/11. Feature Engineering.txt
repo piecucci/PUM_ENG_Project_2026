@@ -1,0 +1,128 @@
+# Exploratory Data Analysis and Data Preparation
+
+In this chapter, we will dive into exploratory data analysis and data preparation. We will begin with data cleaning, specifically focusing on how to cope with missing data. Next, we will explore outlier detection, examining the various non-trivial aspects of identifying and handling anomalous values. Finally, we will discuss feature engineering, including feature scaling, normalization, and feature selection. 
+
+## Handling Missing Data
+
+Imagine a simple dataset for an online store that sells t-shirts. Each data point represents a transaction containing a date, the number of items purchased, the price per item, and the category of the t-shirt. In real-world scenarios, datasets like this frequently contain missing values, often represented as `NaN`. `NaN` stands for "Not a Number," which is a data type and a signal from libraries like `pandas` indicating that a field is empty or contains a non-numerical value where one is expected.
+
+### Identifying Missing Values
+
+The first step in handling missing data is identification. There are several ways to achieve this programmatically:
+
+*   **Visual Identification (Heatmaps):** You can plot missing values using a heatmap (e.g., yellow for missing, green for existing data). While not strictly necessary for a toy dataset, if you have 10,000 rows and 30 different features, a heatmap provides a highly effective visual summary of data completeness. Modern AI coding assistants can easily generate the boilerplate code for these visualizations.
+*   **Numerical Summaries:** You can compute the percentage of missing values per column. For example, a script might output that the `date` column is missing 17% of its values, `number of items` is missing 75%, and `price` is missing 25%. 
+*   **Histograms:** Plotting a missing data histogram is another effective way to understand the distribution of missingness across your dataset.
+
+### Strategies for Coping with Missing Data
+
+Once missing values are identified, we must decide how to handle them. There are several primary strategies:
+
+**1. Deletion (Dropping Data)**
+*   **Drop Rows:** If a specific observation (row) contains multiple missing values, it may be best to simply remove it from the dataset.
+*   **Drop Columns:** If a feature (column) has an overwhelming percentage of missing values (e.g., 75% missing), it may be entirely uninformative and should be dropped.
+
+**2. Imputation (Filling in Data)**
+Dropping data can result in a significant loss of valuable information, which may decrease the quality of your machine learning model. Instead, we can impute (fill in) the missing data with probable values.
+
+*   **Mean or Median Imputation:** For numerical values, the easiest and most common method is to replace `NaN` with the mean or median of that specific column. 
+*   **Model-Based Imputation:** A more precise approach is to use a machine learning model to predict the missing values. For example, if the `price` column has missing values, you can train a model on the rows where the price is known, using the other features as inputs. You then use this model to predict and impute the missing prices. This is particularly common in time-series forecasting, where a model is built to predict and inject missing points in a sequence.
+*   **Categorical Imputation:** For categorical variables, the most common technique is to impute the missing value with the most frequent element (the mode) in that column. 
+*   **Specific Value Replacement:** Alternatively, you can replace missing values with a specific code that the model will learn to recognize. For numerical data, this might be an extreme value like `-999`. For categorical data, you might replace `NaN` with a new category string like `_missing_`. The model will then treat "missing" as its own distinct category.
+
+## Outlier Detection
+
+Outliers are strange or anomalous observations within a dataset. They can be dangerous during the training phase because they can poison the model, leading to incorrect predictions in production. Furthermore, identifying outliers during the production (inference) stage is critical, as strange inputs might indicate a system error or a malicious attack. 
+
+### Causes of Outliers
+
+Before applying detection methods, it is important to understand where outliers come from:
+
+*   **Human Errors:** Data entry mistakes, such as forgetting a decimal point (e.g., typing 12,000 instead of 120.00).
+*   **Instrument Errors:** A broken sensor on a manufacturing line reporting a temperature of 200°C instead of the expected 20°C. This could be a hardware failure or a communication error.
+*   **Experimental Errors:** Incorrect data extraction or flawed scientific experimental setups.
+*   **Intentional Actions:** "Edge testing" a model by intentionally providing extreme inputs to observe its behavior.
+*   **Malicious Attacks:** Hackers interacting with a system in anomalous ways. In cybersecurity, identifying these specific outliers is the primary goal.
+*   **Natural Variance:** Sometimes an outlier is not an error at all, but a true reflection of reality (e.g., a person who is exceptionally tall).
+
+### Method 1: Univariate Statistical Detection (Boxplots and IQR)
+
+The simplest method for identifying outliers relies on statistics and univariate analysis (analyzing one variable at a time). 
+
+1.  **Calculate Quartiles:** We compute the first quartile (Q1), the median (Q2), and the third quartile (Q3). Q1 represents the value below which 25% of the data falls, the median splits the data at 50%, and Q3 represents the value below which 75% of the data falls.
+2.  **Calculate the Interquartile Range (IQR):** The IQR is the distance between the first and third quartiles ($IQR = Q3 - Q1$). This forms the "box" in a boxplot.
+3.  **Define Boundaries:** We calculate the "whiskers" of the plot to define the boundaries of normality. The lower boundary is $Q1 - 1.5 \times IQR$, and the upper boundary is $Q3 + 1.5 \times IQR$. The multiplier 1.5 is a standard convention, though it can be adjusted.
+4.  **Identify Outliers:** Any data point falling outside these lower and upper boundaries is flagged as an outlier.
+
+We automate this mathematical procedure because modern datasets contain thousands of features and continuous streams of incoming data, making manual visual inspection impossible. 
+
+However, this method has a major limitation: it only looks at one dimension at a time. A data point might fall perfectly within the normal range for "height" and the normal range for "weight" independently, but the *combination* of that specific height and weight might be highly anomalous. Univariate methods will fail to spot this.
+
+### Method 2: Supervised Model-Based Detection (Residuals)
+
+To address the limitations of univariate analysis, we can use a model-based approach. When we look at a scatterplot and intuitively identify an outlier, we are unconsciously creating a mental model of the data's normal pattern (e.g., a line of best fit) and noticing points that fall far from that pattern.
+
+We can formalize this by training a regression model on the data. For every data point, we compute the residual error, which is the distance between the actual value and the value predicted by the model. Points with extremely high residual errors are flagged as outliers. This method is highly effective because it takes into account the relationships between multiple dimensions.
+
+### Method 3: Unsupervised Machine Learning (Isolation Forest)
+
+One of the most elegant and objective methods for outlier detection utilizes unsupervised machine learning. The most commonly used algorithm for this task is the Isolation Forest.
+
+Unlike regression, which requires a target variable (supervised learning), an Isolation Forest simply looks at the structure of the dataset and isolates anomalies. When implementing this in platforms like Dataiku or using `scikit-learn`, you can control the algorithm's sensitivity using a hyperparameter called `contamination`. This parameter defines the expected proportion of outliers in the dataset. Adjusting the contamination rate (e.g., from 5% down to 1%) allows you to fine-tune the model to flag only the most extreme anomalies.
+
+### Applications of Outlier Detection
+
+Outlier detection is not just a data cleaning step; it is often the core objective of a machine learning project. Common applications include:
+
+*   **Fraud Detection:** Identifying fraudulent credit card transactions, loan applications, or insurance claims.
+*   **Cybersecurity:** Intrusion detection and identifying unauthorized access in computer networks.
+*   **Fault Diagnosis:** Monitoring engine sounds, generator performance, or pipeline integrity to detect mechanical failures.
+*   **Image and Motion Analysis:** Detecting structural defects on manufacturing lines, misclassified features in satellite imagery, or unexpected motion in surveillance systems.
+*   **Medical Monitoring:** Flagging anomalous heart rates in patient monitors.
+
+## Feature Engineering, Scaling, and Selection
+
+Feature engineering is the process of transforming raw data into features that better represent the underlying problem to the predictive models. A critical component of this is feature scaling.
+
+### The Importance of Feature Scaling
+
+Imagine we are building a recommendation system to suggest t-shirt sizes. We have historical data for two customers:
+*   **Janek:** 175 lbs, 5.9 ft (Wears size L)
+*   **Kasia:** 115 lbs, 5.2 ft (Wears size S)
+
+We want to recommend a size for a new customer, **Tomek**, who is 140 lbs and 6.1 ft. 
+
+A standard algorithm (like K-Nearest Neighbors) will try to find the customer most similar to Tomek by calculating the Euclidean distance between their data points. Because the numerical values for weight (115 to 175) are much larger than the values for height (5.2 to 6.1), the weight feature will mathematically dominate the distance calculation. The algorithm will conclude Tomek is closer to Kasia based almost entirely on weight, ignoring the fact that he is taller than Janek. It will incorrectly recommend a size S.
+
+To prevent features with larger absolute values from dominating the model, we must scale them.
+
+### Normalization (Min-Max Scaling)
+
+Normalization transforms all values for a given feature to fall within a specific range, typically 0 to 1. The formula is:
+
+$$X_{normalized} = \frac{X - X_{min}}{X_{max} - X_{min}}$$
+
+If we apply this to our t-shirt example, the heaviest person gets a weight value of 1, the lightest gets a 0, and everyone else falls in between. The same applies to height. Once normalized, the Euclidean distance calculation treats both features equally. Recalculating the distance will correctly show that Tomek is closer to Janek, resulting in an accurate recommendation of size L.
+
+In Python, this is easily implemented using `scikit-learn`'s `MinMaxScaler`. You instantiate the scaler, `fit` it to the data (which calculates the min and max), and then `transform` the data.
+
+### Standardization
+
+Standardization is another scaling technique. Instead of bounding values between 0 and 1, it centers the data around a mean of 0 with a standard deviation of 1. This is particularly useful for algorithms that assume data is normally distributed (Gaussian). In `scikit-learn`, this is handled by the `StandardScaler`. 
+
+In practice, you will often replace your original raw columns with these newly generated normalized or standardized columns before training your model.
+
+### Feature Generation and Reduction
+
+Feature engineering also involves creating new features or reducing existing ones:
+
+*   **Feature Generation:** You can create new features by combining existing ones. For example, pairwise linear combinations (adding or subtracting features) or polynomial combinations (multiplying features). While this can sometimes capture complex relationships, generating hundreds of new features can significantly increase training time and sometimes degrade model quality.
+*   **Feature Reduction:** If you have hundreds of features, you may want to reduce them to improve model efficiency and interpretability. Techniques like Principal Component Analysis (PCA) are commonly used to compress the feature space while retaining the most important variance in the data.
+
+### Feature Importance and Selection
+
+How do we know which features are actually helping our model? Modern machine learning algorithms can compute **variable importance**. 
+
+Under the hood, the system evaluates features by turning them off (or permuting them) during training and measuring the impact on the model's performance. For example, if removing a feature causes the model's ROC AUC score to drop significantly (e.g., from 0.805 to 0.751), the system flags that feature as highly important. Conversely, if removing a feature has no impact on performance, it is deemed unimportant.
+
+This process, known as feature selection, allows data scientists to strip away unnecessary data, resulting in leaner, faster, and often more accurate models. While feature engineering used to require weeks of manual coding and experimentation, modern Automated Machine Learning (AutoML) systems now perform scaling, generation, and selection automatically under the hood.

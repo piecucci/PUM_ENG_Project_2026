@@ -1,0 +1,128 @@
+# Machine Learning Algorithms: Regression, Classification, and Clustering
+
+While automated machine learning (AutoML) libraries can now evaluate and select algorithms for you, understanding how these algorithms look at data and create models remains a foundational skill. This knowledge allows you to assign the correct algorithm type to a given business problem, interpret quality measures, and evaluate whether a model is suitable for deployment. 
+
+This chapter explores the mechanics behind three core types of machine learning algorithms: regression, classification (specifically decision trees), and segmentation (clustering). 
+
+## Regression Algorithms
+
+Regression is a method for solving problems where the predictor—the variable we want to predict—is a continuous number. Common examples include predicting stock prices based on historical data or predicting the price of a house based on its square footage.
+
+When we fit a regression line to historical data, we are essentially creating a form of artificial intelligence. The "intelligence" lies in the model's ability to adapt to new environments and unseen situations. For example, if you have historical data for 100 flats but are presented with a new flat of a size you have never sold before (e.g., 2,400 square feet), the regression model can generalize from the historical data to predict a fair market price for this new, unseen data point.
+
+### Measuring the Error
+
+To fit a line to data, a computer needs a mathematical definition of what makes one line "better" than another. We determine this by measuring the error. The line with the minimum error is the best fit. Two common methods for computing this error are:
+
+*   **Mean Absolute Error (MAE):** We calculate the absolute difference between the true value ($y$) and the model's predicted value ($\hat{y}$) for each data point. We take the absolute value so that positive and negative errors do not cancel each other out. We then sum these absolute errors and divide by the number of points.
+*   **Mean Squared Error (MSE):** We calculate the difference between the true value and the prediction, square it, sum these squared differences, and divide by the number of points (often divided by $2n$ for mathematical convenience during optimization).
+
+### Gradient Descent
+
+Once we have an error metric, the algorithm must iteratively find the line that minimizes this error. A straight line is defined by the equation $\hat{y} = ax + b$, where $a$ is the slope (how vertical the line is) and $b$ is the y-intercept (the height of the line). The algorithm's goal is to find the specific values of $a$ and $b$ that minimize the final error.
+
+The computer achieves this using a method called **Gradient Descent**. 
+
+Imagine you are lost in the mountains on a dark night. You need to reach your camp at the bottom of the valley, but you only have a small flashlight that illuminates a one-meter radius around you. To find your way down, you would test all possible directions (forward, backward, left, right) and measure the local change in elevation. You would then take a step in the direction that provides the steepest decrease in height. Gradient descent works on the exact same principle, but instead of physical height, it minimizes the mathematical error.
+
+1.  **Initial Guess:** The algorithm starts with random values for $a$ and $b$.
+2.  **Calculate the Derivative:** The algorithm computes the derivative of the error function with respect to the parameters. The derivative acts as the "flashlight," indicating the direction of the steepest ascent. 
+3.  **Update Parameters:** To minimize the error, the algorithm moves in the *opposite* direction of the derivative (subtracting it). 
+
+#### The Learning Rate ($\alpha$)
+If we update our parameters using the raw derivative, the changes can be too drastic, causing the algorithm to overshoot the minimum error and behave erratically. To prevent this, we introduce a hyperparameter called the **learning rate** ($\alpha$), typically set to a small value like 0.1 or 0.01. The learning rate scales down the derivative, ensuring the algorithm takes small, stable steps toward the minimum.
+
+### Variations of Gradient Descent
+
+Gradient descent is the foundational optimization algorithm used not only in linear regression but also in training complex neural networks. There are three primary ways to apply it:
+
+1.  **Stochastic Gradient Descent (SGD):** The algorithm calculates the error and updates the parameters ($a$ and $b$) after examining *every single data point* sequentially. While fast, this can lead to a noisy, unstable optimization path.
+2.  **Batch Gradient Descent:** The algorithm calculates the error for *all* data points in the training set, averages the errors, and makes a single parameter update. This is much more stable but requires more memory and time per update.
+3.  **Mini-batch Gradient Descent:** A compromise between the two. The dataset is split into smaller chunks (e.g., packages of 200 data points). The algorithm averages the error within each mini-batch and updates the parameters. This is the standard approach for training modern neural networks.
+
+## Classification Algorithms: Decision Trees
+
+Classification is the art of predicting a categorical label for an object. Unlike regression, which predicts continuous numbers, classification assigns data to a finite set of categories. Examples include multi-label classification (e.g., identifying a dog breed from an image) and binary classification (e.g., routing an email to the inbox or the spam folder, or predicting whether a student will be admitted to a university).
+
+### How Decision Trees Work
+
+If you are given a small dataset of users with features like "Age" and "Gender," and a target label of "App Downloaded" (e.g., Pokémon Go, Instagram, YouTube), a human can easily spot patterns. You might notice that everyone under the age of 15 downloaded Pokémon Go, and then use gender to separate the older users. 
+
+However, when dealing with thousands of rows and dozens of features, human intuition fails. A computer builds a **Decision Tree** by systematically asking: *Which characteristic most strongly determines the target label?*
+
+The algorithm evaluates every possible feature (e.g., Age, Gender, Exam Score, High School GPA) and every possible split point (e.g., Age < 15, Exam Score > 6.0). It chooses the split that creates the most homogenous (pure) sub-groups. 
+
+### Entropy and Information Gain
+
+To mathematically determine the best split, decision trees use concepts like **Entropy**. Entropy is a measure of impurity, chaos, or randomness in a dataset. 
+*   A dataset where 50% of users downloaded Instagram and 50% downloaded YouTube has *high entropy* (high uncertainty).
+*   A dataset where 100% of users downloaded Pokémon Go has *zero entropy* (perfect certainty).
+
+At each step, the algorithm calculates the entropy of the current group, tests a potential split, and calculates the entropy of the resulting sub-groups. The split that results in the largest drop in entropy provides the highest **Information Gain**. The algorithm recursively applies this process, splitting branches until it reaches pure leaf nodes or a predefined depth limit (to prevent overfitting via a process called pruning).
+
+In practice, when using platforms like `Dataiku` or `scikit-learn`, the resulting decision tree can be visualized as a flowchart. To predict the outcome for a new customer, you simply drop their data into the top of the tree and follow the true/false branches down to the final leaf node.
+
+## Segmentation and Clustering Algorithms
+
+Segmentation (or clustering) is an unsupervised learning technique. The algorithm is given input data without any predefined labels and is tasked with discovering hidden patterns or groupings. The output is a new categorical feature assigned to each data point (e.g., Cluster 0, Cluster 1, Cluster 2).
+
+### K-Means Clustering
+
+K-Means is one of the most common and computationally efficient clustering algorithms. 
+
+1.  **Define Hyperparameters:** You must manually specify the number of clusters ($k$) you expect. (In practice, data scientists use programmatic approaches like the "Elbow Method" or distortion scores in libraries like `PyCaret` or `AutoGluon` to automatically identify the optimal $k$).
+2.  **Define Distance Metric:** You must define how distance is measured between points. The most common is Euclidean distance (straight-line distance), but depending on the business case, other metrics might be necessary.
+3.  **Initialization:** The algorithm randomly places $k$ cluster centers (centroids) in the data space.
+4.  **Assignment:** Each data point is assigned to the nearest centroid.
+5.  **Update:** The algorithm calculates the actual center of the newly formed clusters and moves the centroids to these new coordinates.
+6.  **Repeat:** Steps 4 and 5 are repeated until the centroids stop moving.
+
+**Limitations:** K-Means is highly sensitive to the initial random placement of the centroids. Different random initializations can result in entirely different final clusters. It also struggles with non-circular cluster shapes.
+
+### Hierarchical Clustering
+
+Hierarchical clustering takes a completely different, bottom-up approach. It does not require you to specify the number of clusters in advance.
+
+1.  **Start:** Every single data point is initially treated as its own independent cluster.
+2.  **Merge:** The algorithm finds the two closest clusters and merges them into a pair.
+3.  **Repeat:** It continually finds the next closest clusters and merges them, building larger and larger groups until all points are merged into a single massive cluster.
+
+**Linkage Methods:** The key to hierarchical clustering is how you define the distance between two *clusters* (rather than two points). 
+*   *Single Link:* The distance between two clusters is the distance between their two closest points.
+*   *Complete Link:* The distance is based on their two furthest points.
+*   *Ward's Method:* The most commonly used approach. It calculates the center of each cluster, the combined center if they were merged, and minimizes the variance (distance of points to the centers).
+
+**Visualization:** Hierarchical clustering is visualized using a **dendrogram** (a tree-like whisker plot). The height of the vertical lines in the dendrogram represents the distance (or inverse similarity) between the merged clusters. 
+
+**Pros and Cons:** It is highly interpretable and great for categorical or evolutionary data. However, it is computationally demanding, slow, and sensitive to noise and outliers.
+
+### DBSCAN (Density-Based Spatial Clustering of Applications with Noise)
+
+DBSCAN is a powerful algorithm that groups points based on density. Unlike K-Means, it can identify arbitrarily shaped clusters (like a smiley face) and explicitly isolates outliers as "noise."
+
+DBSCAN relies on two hyperparameters:
+1.  **Epsilon ($\epsilon$):** The search radius around a point. Think of this as a paintbrush size; too large, and it paints over distinct clusters; too small, and it fragments them.
+2.  **Minimum Points:** The minimum number of points required within the epsilon radius to form a valid cluster.
+
+**The Algorithm:**
+1.  Select a random point.
+2.  Check the epsilon radius around it. If there are fewer points than the "Minimum Points" threshold, the point is temporarily marked as noise (or a border point).
+3.  If the radius contains enough points, a new cluster is born.
+4.  The algorithm then checks the radius of all points within this new cluster, expanding the cluster like a virus until no more dense points are found.
+5.  It then picks a new unvisited random point and repeats the process.
+
+### Evaluating Clustering Models: The Silhouette Coefficient
+
+Because clustering is unsupervised, we do not have "true" labels to calculate an error rate. Instead, we evaluate the quality of a segmentation using metrics like the **Silhouette Coefficient**.
+
+The Silhouette Coefficient measures how similar a point is to its own cluster compared to other clusters. For a given data point:
+1.  Calculate the average distance to all other points *within its own cluster*.
+2.  Calculate the average distance to all points in the *nearest neighboring cluster*.
+3.  Subtract the internal distance from the external distance, and divide by the larger of the two values.
+
+This results in a score between -1 and 1 for every point. 
+*   A score close to **1** means the point is tightly matched to its own cluster and well-separated from neighboring clusters.
+*   A score near **0** indicates the point is on the border between two clusters.
+*   A negative score suggests the point may have been assigned to the wrong cluster.
+
+By averaging the Silhouette Coefficients of all points in a dataset, we get a single number that represents the overall quality of the segmentation. This allows data scientists to compare different algorithms (e.g., K-Means vs. DBSCAN) or different hyperparameters (e.g., $k=3$ vs. $k=4$) and objectively select the best model.

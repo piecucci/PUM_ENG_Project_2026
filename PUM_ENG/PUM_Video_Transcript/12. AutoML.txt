@@ -1,0 +1,157 @@
+# Automated Machine Learning (AutoML)
+
+## Introduction to AutoML
+
+In previous studies of machine learning fundamentals, we have utilized commercial data science platforms like Dataiku. These platforms help automate various tasks such as feature engineering, model selection, training, and evaluation. However, these systems are commercial and, in most cases, serve as visual overlays for open-source libraries like `scikit-learn` or PyTorch. 
+
+This chapter explores open-source solutions that automate the machine learning process—a field known as Automated Machine Learning (AutoML). The modern machine learning landscape is highly automated. Consequently, it is often more practical for practitioners to invest their energy into managing the data pipeline rather than manually programming the mathematical details of machine learning algorithms. 
+
+There are plenty of AutoML libraries currently available. Three of the most popular open-source platforms are **PyCaret**, **AutoGluon**, and **AutoKeras**. We will begin by comparing these platforms before diving into a practical, step-by-step implementation using PyCaret.
+
+## Overview of Open-Source AutoML Libraries
+
+When evaluating AutoML tools, it is helpful to compare them across several dimensions of the data science process:
+
+*   **Supported Data Types:** 
+    *   *Tabular Data:* PyCaret and AutoGluon excel at handling standard tabular data.
+    *   *Text Data (NLP):* While some general AutoML tools attempt natural language processing, the growing interest in Large Language Models has made dedicated solutions like Hugging Face or `spaCy` (spacy.io) the industry standard for NLP. 
+    *   *Image Data:* AutoGluon and AutoKeras provide robust support for image recognition tasks.
+*   **Problem Types:** PyCaret supports supervised learning (classification and regression), unsupervised learning (clustering and anomaly detection), and time-series forecasting. AutoGluon and AutoKeras focus predominantly on supervised learning.
+*   **Preprocessing Capabilities:** AutoGluon offers extensive built-in preprocessing steps, including exploratory data analysis, data preparation, scaling, transforming, and feature selection. PyCaret also provides a rich suite of data preparation tools.
+*   **Supported Frameworks:** PyCaret acts as a wrapper around libraries like `scikit-learn` and XGBoost. Interestingly, PyCaret does not natively focus on neural networks, whereas AutoGluon and AutoKeras are built specifically to leverage deep learning frameworks.
+
+### PyCaret
+PyCaret is an elegant, low-code machine learning library. Its official documentation provides excellent quick-start guides and tutorials. It is highly recommended for learning and prototyping because of its clear explanations and intuitive overall philosophy. 
+
+**Best Practice for Installation:** It is strongly advised to install PyCaret in a dedicated Conda virtual environment. PyCaret relies on specific versions of key data science libraries like `pandas` and `numpy`. Installing it in your base environment may overwrite your current library versions, potentially breaking existing projects. Alternatively, PyCaret offers official Docker images. Running PyCaret via Docker will automatically spin up a Jupyter Notebook with a dedicated PyCaret kernel, bypassing local installation issues entirely.
+
+### AutoGluon
+Developed by Amazon, AutoGluon is a highly powerful tool, particularly suited for industrial and commercial applications. While its interface may not be as visually polished as PyCaret's, it includes advanced features necessary for production environments. For example, AutoGluon allows you to set strict time limits on model training (e.g., restricting training to exactly one hour) to manage compute resources. It also includes advanced feature preparation options and multi-modal capabilities, allowing it to handle tabular, text, and image data simultaneously.
+
+### AutoKeras
+AutoKeras is built on top of the Keras library, which itself is a high-level interface for TensorFlow. AutoKeras specializes in Neural Architecture Search (NAS). Historically, finding the optimal architecture for a neural network was extremely expensive in terms of computing power and time. AutoKeras automates the search for the optimal neural network architecture, making deep learning much more accessible.
+
+## Setting Up the Environment and Data
+
+To demonstrate the AutoML workflow, we will use PyCaret to solve a classification problem: predicting customer churn for a telecom company. 
+
+The dataset consists of 3,333 records (customers) and 23 columns (22 features and 1 target variable). The features include information such as the customer's state, area code, account length, international plan status, and total call minutes. The target variable is `churn`, where `0` indicates the customer stayed, and `1` indicates the customer left the company. The goal is to train a model that can predict whether a new, unseen customer is likely to churn.
+
+First, we import `pandas` and load our dataset. We then split the dataset into two parts: 80% (2,666 records) will be used for training and evaluating our models, and 20% (667 records) will be held out as completely unseen data to test our final model at the very end.
+
+## Exploratory Data Analysis with `pandas-profiling`
+
+Before modeling, we must perform Exploratory Data Analysis (EDA) to understand our data without altering it. A powerful open-source tool for this is `pandas-profiling` (now known as `ydata-profiling`). 
+
+By simply passing our dataframe to this library, it generates a comprehensive HTML report. Because it computes a massive number of statistics, generating the report can take a minute or two, even on a dataset of just 3,000 rows. 
+
+The generated report includes:
+*   **Dataset Overview:** Total variables, observation count, and missing data percentages. It automatically identifies variable types (categorical, numerical, boolean).
+*   **Variable Details:** For categorical variables, it shows distinct values, cardinality, and frequency plots. For numerical variables, it provides minimum, maximum, median, quartiles, standard deviation, skewness, and automatically binned histograms.
+*   **Warnings:** The tool flags potential issues. For example, it will warn you if a variable like `phone` has extremely high cardinality. Since a phone number is essentially a unique identifier, it provides no generalizable pattern for predicting churn and should be excluded from the model.
+*   **Interactions and Correlations:** The report includes interactive scatter plots and computes multiple correlation matrices (Spearman, Pearson, Kendall, etc.).
+
+This open-source tool provides analytical depth comparable to the built-in analysis tabs found in commercial platforms like Dataiku.
+
+## The PyCaret Workflow
+
+### 1. Initializing the Setup
+
+Unlike some commercial platforms that automatically guess the problem type, PyCaret requires you to explicitly import the correct module. Since we are predicting a binary outcome, we import from the classification module.
+
+The foundation of any PyCaret project is the `setup()` function. This function ingests the data and configures the entire training environment. 
+
+```python
+from pycaret.classification import *
+
+clf_setup = setup(
+    data = train_data, 
+    target = 'churn', 
+    train_size = 0.8,
+    imputation_type = 'iterative',
+    ignore_features = ['phone'],
+    session_id = 123
+)
+```
+
+In this setup:
+*   `data`: We pass our training subset (2,666 rows).
+*   `target`: We specify the variable we want to predict (`churn`).
+*   `train_size`: We tell PyCaret to use 80% of this data for training and 20% for cross-validation.
+*   `imputation_type`: We define how to handle missing data (if any is found).
+*   `ignore_features`: We explicitly drop the highly cardinal `phone` column.
+*   `session_id`: We set a random seed to ensure reproducibility in future sessions.
+
+### 2. Comparing and Selecting Models
+
+Once the setup is complete, we can train and evaluate multiple machine learning algorithms simultaneously using a single command:
+
+```python
+best_model = compare_models()
+```
+
+Under the hood, PyCaret trains numerous models (Random Forest, Logistic Regression, Gradient Boosting, etc.) and performs 10-fold cross-validation. Cross-validation mitigates the risk that a random train/test split might artificially inflate or deflate our performance metrics. 
+
+The output is a leaderboard ranking the models by default metrics such as Accuracy, AUC (Area Under the Curve), Recall, Precision, F1 Score, Kappa, and MCC. In our example, XGBoost emerges as the top-performing model, achieving an impressive AUC score of 0.922. Notably, this automated open-source baseline often matches or exceeds the initial baseline models generated by commercial platforms.
+
+### 3. Fine-Tuning the Model
+
+Having identified XGBoost as the best algorithm, we can isolate it and optimize its hyperparameters. 
+
+```python
+xgb = create_model('xgboost')
+tuned_xgb = tune_model(xgb, optimize='Recall')
+```
+
+By default, models are often optimized for accuracy. However, in a business context like churn prediction, we may want to optimize for **Recall**. Optimizing for Recall minimizes false negatives—situations where the model incorrectly predicts that a customer will stay, causing the company to miss the opportunity to intervene. After running `tune_model()`, PyCaret performs a thorough hyperparameter search, significantly improving the model's Recall score.
+
+PyCaret also allows you to print the exact hyperparameters of the tuned model. This is crucial for production: instead of retraining thousands of models from scratch on new data, you can instantiate a single XGBoost model with these exact, optimized hyperparameters to save computing power.
+
+### 4. Analyzing Model Performance
+
+PyCaret provides a rich suite of tools for model evaluation and explainable AI (XAI). By calling `evaluate_model(tuned_xgb)`, PyCaret generates an interactive dashboard within the notebook. 
+
+This dashboard includes:
+*   **Feature Importance:** Visualizing which variables (e.g., total charge, international plan) have the highest impact on predictions.
+*   **Classification Statistics:** Confusion matrices, ROC curves, and precision-recall curves.
+*   **What-If Analysis:** An interactive tool allowing you to manually adjust feature values for a specific customer and observe how the model's prediction changes in real-time.
+
+## Experiment Tracking
+
+When moving toward production, it is often necessary to store the results of your experiments (metrics, hyperparameters, and plots) in an external database. 
+
+For cloud-based projects, commercial solutions like **Weights & Biases** are industry standards. You embed a small Python snippet in your training code, and it streams live metrics to a web dashboard. This is invaluable when running models on remote servers that take days to train, allowing you to monitor progress from anywhere.
+
+However, if you are working on commercial projects with sensitive data that cannot be sent to external cloud providers, you can use open-source, on-premise solutions like **MLflow** (developed by Databricks). MLflow Tracking allows you to spin up a local server to log and compare your experiments securely.
+
+## Finalizing, Saving, and Deploying the Model
+
+Up to this point, our `tuned_xgb` model has only been trained on 80% of our 2,666-row dataset (due to the internal cross-validation split). To maximize the model's predictive power before deployment, we must retrain it on the entire dataset.
+
+```python
+final_xgb = finalize_model(tuned_xgb)
+```
+
+The `finalize_model()` function takes the optimized hyperparameters and trains the model on 100% of the available training data. 
+
+Next, we test this finalized model on the 667 rows of holdout data we separated at the very beginning of the project. This data is completely unseen by the model.
+
+```python
+unseen_predictions = predict_model(final_xgb, data=unseen_data)
+```
+
+The output will append two new columns to our dataframe: the prediction label (0 or 1) and the prediction score (the probability).
+
+Finally, we save the model to our local drive. PyCaret serializes the model and the entire preprocessing pipeline into a Pickle (`.pkl`) file.
+
+```python
+save_model(final_xgb, 'Final_XGBoost_Model_June2023')
+```
+
+This `.pkl` file—often just a few hundred kilobytes—is the final deliverable of the data scientist. In a production environment, a software engineer or ML engineer will use `load_model()` to ingest this file and build an application or API around it. PyCaret even includes a `create_app()` function that generates a basic, interactive web interface for toy deployments and testing.
+
+## Conclusion and Next Steps
+
+PyCaret provides a highly efficient, automated workflow: it loads data, handles missing values, transforms features, trains multiple models, fine-tunes hyperparameters, and exports a serialized pipeline ready for production. 
+
+To solidify your understanding of AutoML, it is highly recommended to practice these concepts. First, explore unsupervised learning by following the clustering tutorials in the PyCaret documentation. Second, attempt to replicate this exact churn prediction workflow using AutoGluon. Adapting official quick-start guides to your own datasets is one of the most effective ways to master modern machine learning tools.
