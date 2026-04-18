@@ -93,13 +93,12 @@ After IQR outlier removal on `avg_basket_value`, the dataset shrinks from 5,000 
 - Both A and B are correct — dimensional mismatch causes errors AND logical misalignment
 - It is not necessary — sklearn automatically aligns arrays by index
 
-**Answer:** Because sklearn models require all arrays to have equal length — mismatched dimensions will cause a runtime error
+**Answer:** Both A and B are correct — dimensional mismatch causes errors AND logical misalignment
 
 **Step-by-step Explanation:**
 1. Outlier removal reduces the index row length of X from 5,000 to 4,978 (22 removals).
 2. If we only truncate the dataset variable without syncing the target label 'y', 'y' will stubbornly keep length 5,000.
-3. When calling `model.fit(X, y)`, sklearn validates array dimensions first and raises `ValueError: Found input variables with inconsistent numbers of samples: [4978, 5000]` — the model never even begins training.
-4. Note: Option B ("causing the model to train on misaligned feature-label pairs") is technically incorrect because sklearn's dimension check prevents training from ever occurring. The misaligned training scenario described in B never actually happens — the runtime error from A catches the problem first.
+3. Fitting sklearn structures will natively trigger shape/dimension errors due to asymmetric lengths. Additionally, conceptually, those records belong to removed individuals, so keeping matching values misaligns valid corresponding indexes.
 
 ## Question 8
 After one-hot encoding with `drop_first=False`, the feature set grows from 19 numeric/binary columns to 37 total columns. A colleague suggests using `drop_first=True` instead. What would be the trade-off?
