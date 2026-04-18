@@ -1,5 +1,7 @@
 # MP2: Data Cleaning & Feature Engineering - Test & Solutions
 
+> **✅ VERIFIED: 10/10 (2026-04-18)**
+
 ## Question 1
 A dataset has a column `age` with ~3% missing values. Analysis shows the missing values appear randomly across all demographic groups. This pattern is called:
 - MAR (Missing At Random) — missingness depends on observed variables
